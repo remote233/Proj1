@@ -114,8 +114,7 @@ q_hamabot <- c(quantile(df4$hamabot, 0.05),quantile(df4$hamabot, 0.95))
 abline(v=q_hamabot[1], col="red")
 abline(v=q_hamabot[2], col="red")
 ```
-
-
+12345
 
 
 
