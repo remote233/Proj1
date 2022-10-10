@@ -69,6 +69,13 @@ df2_missing$real_dates <- dates
 ```
 
 ```{r}
+df2_missing$real_dates=gsub("  "," ", df2_missing$real_dates)
+df2_missing=df2_missing %>%
+  separate(real_dates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
+```
+
+
+```{r}
 df_all <- df_all %>%
   drop_na(.)
 ```
@@ -114,7 +121,32 @@ q_hamabot <- c(quantile(df4$hamabot, 0.05),quantile(df4$hamabot, 0.95))
 abline(v=q_hamabot[1], col="red")
 abline(v=q_hamabot[2], col="red")
 ```
-12345
+
+ 
+```{r}
+boxplot(df4$hamatop[df4$hamatop<10^5])
+```
+
+
+# 3.
+(a)
+```{r}
+colnames(df3)[1] <- "epoch"
+df_all$epochDates=gsub("  "," ", df_all$epochDates)
+df_all=df_all %>%
+  separate(epochDates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
