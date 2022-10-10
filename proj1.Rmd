@@ -122,8 +122,13 @@ abline(v=q_hamabot[1], col="red")
 abline(v=q_hamabot[2], col="red")
 ```
 
+```{r}
+df4 <- df4 <-
+```
+
  
 ```{r}
+par(cex.main=0.75)
 boxplot(df4$hamatop[df4$hamatop<10^5])
 ```
 
@@ -132,8 +137,10 @@ boxplot(df4$hamatop[df4$hamatop<10^5])
 (a)
 ```{r}
 colnames(df3)[1] <- "epoch"
-df_all$epochDates=gsub("  "," ", df_all$epochDates)
-df_all=df_all %>%
+
+df4_new <- merge(df4,df3,by="epoch",all.x=TRUE)
+df4_new$epochDates=gsub("  "," ", df4_new$epochDates)
+df4_new <- df4_new %>%
   separate(epochDates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
 ```
 
