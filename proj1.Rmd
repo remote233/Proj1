@@ -33,6 +33,11 @@ The process of data collection is critical to this study, so researchers careful
 # 2.
 ## (a)
 ```{r}
+df_all <- read.csv("project1_data/data/sonoma-data-all.csv")
+```
+
+
+```{r}
 hist(df1$humidity)
 hist(df2$humidity[df2$humidity>-10])
 hist(df1$humid_temp[df1$humid_temp<35], breaks = seq(5,35,by=2.5))
@@ -63,13 +68,52 @@ for(i in 1:nrow(df2_missing)){
 df2_missing$real_dates <- dates
 ```
 
+```{r}
+df_all <- df_all %>%
+  drop_na(.)
+```
 
 
 
 
+## (c)
+We load the datasets of mote locations and change the column names for ID to nodeid to match tables we created before.
+```{r}
+loc <- read.table("project1_data/data/mote-location-data.txt", header = TRUE)
+colnames(loc)[1] <- "nodeid"
+```
+
+Left join the loc table to the main table by nodeid.
+```{r}
+df4 <- merge(df_all, loc, by="nodeid",all.x=TRUE)
+head(df4)
+```
+As we can see above, there are 15 variables in the new datasets after the merge.
 
 
+## (d)
+```{r}
+hist(df4$humidity[df4$humidity>-10])
+q_humidity <- c(quantile(df4$humidity, 0.005),quantile(df4$humidity, 0.995))
+abline(v=q_humidity[1], col="red")
+abline(v=q_humidity[2], col="red")
 
+hist((df4$humid_temp[df4$humid_temp<35 & df4$humid_temp>0]))
+q_humid_temp <- c(quantile(df4$humid_temp, 0.005),quantile(df4$humid_temp, 0.995))
+abline(v=q_humid_temp[1], col="red")
+abline(v=q_humid_temp[2], col="red")
+
+hist(df4$hamatop[df4$hamatop<10^5])
+q_hamatop <- c(quantile(df4$hamatop, 0.05),quantile(df4$hamatop, 0.95))
+abline(v=q_hamatop[1], col="red")
+abline(v=q_hamatop[2], col="red")
+
+
+hist(df4$hamabot[df4$hamabot<6000])
+q_hamabot <- c(quantile(df4$hamabot, 0.05),quantile(df4$hamabot, 0.95))
+abline(v=q_hamabot[1], col="red")
+abline(v=q_hamabot[2], col="red")
+```
 
 
 
