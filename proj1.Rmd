@@ -1,0 +1,78 @@
+---
+title: "Proj1"
+author: "Yiliang Yuan"
+date: "2022-10-09"
+header-includes:
+    - \usepackage{setspace}\doublespacing
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+df1 <- read.csv("project1_data/data/sonoma-data-net.csv")
+df2 <- read.csv("project1_data/data/sonoma-data-log.csv")
+# We derive the sonoma-dates.csv from the original file sonoma-dates
+df3 <- read.csv("project1_data/data/sonoma-dates.csv")
+```
+
+
+# 1.
+## (a)
+In the paper A Macroscope in the Redwoods, researchers describe how they get the previously-unobtainable dataset of the microclimate surrounding a redwood tree through a wireless sensor network, and they show their analysis of these complex datasets. The purpose of this study is mainly to test whether wireless sensor networks can advance several scientific fields, which researchers talk about in the motivation part. In order to show the capability of the wireless sensor network, researchers choose to study the ecophysiology of coastal redwood forests by using the network system to monitor the microclimate surrounding a 70-meter tall redwood tree. With a well-designed data collection process and detailed analysis, they finally reached the conclusion that the sensor network macroscope enables dense temporal and spatial monitoring of large volumes of data, which can contribute to the advancement of the scientific field. In this paper, researchers also talk about lessons they learned from the experiment and how they could deploy sensor networks better in the future. To help detect the failure of the network and make responses on time, researchers suggest that every long-term sensor network deployment should include a network monitoring component which can monitor the performance of the system and make alerts when the system behaves abnormally. Besides, by verifying the existence of the spatial gradients in the microclimate near the redwood tree and collecting enough data to view changes in these gradients over time, researchers were able to validate some biological theories related to these findings.
+
+## (b)
+The process of data collection is critical to this study, so researchers carefully designed the wireless sensor network system, and used efficient deployment methodology for the system. Before being deployed, all the sensors were carefully tested and calibrated in two phrases which were roof and chamber. After that, sensor nodes were placed on the redwood tree 15 to 70 meters above the ground because most foliage was in the upper part of the tree. There was a 2 meters space between each node to ensure that researchers could capture gradients in enough detail. In addition, researchers placed the nodes on the west side of the tree since there was a thicker canopy and it could reduce the influence of the direct environmental effects. Besides, to record the microclimatic trends which had direct effects on the tree, researchers chose to place the node very close (0.1-1.0m) to the trunk. In order to get enough data, researchers record the data once every 5 minutes for 44 days. In the collected data, researchers are interested in some variables including temperature, humidity, light levels and both incident and reflected Photosynthetically active radiation(PAR). In this study, researchers collected data from both sensor network and local log, so we have two different datasets which are sonoma-data-log.csv from local log and sonoma-data-net.csv from network. For the data received from the network, there are 114980 observations while the log data contain 301056 observations. The network data only has recordings from May 7th to June 2nd which was a period of 26 days, because most of the local nodes ran out of space on that day.
+
+
+# 2.
+## (a)
+```{r}
+hist(df1$humidity)
+hist(df2$humidity[df2$humidity>-10])
+hist(df1$humid_temp[df1$humid_temp<35], breaks = seq(5,35,by=2.5))
+hist(df2$humid_temp[df2$humid_temp>5 & df2$humid_temp<35], breaks = seq(5,35, by=2.5))
+hist(df1$hamatop)
+hist(df2$hamatop[df2$hamatop<10^5])
+hist(df1$hamabot[df1$hamabot<6000])
+hist(df2$hamabot[df2$hamabot<6000])
+```
+
+Variables we are interested about are humidity, temperature, hamatop, and hamabot. We find that when scaling to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent.In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
+
+## (b)
+```{r}
+index1 = unique(which(is.na(df1))%%114980)
+df1_missing <- df1[index1,]
+index2 = unique(which(is.na(df2))%%301056)
+df2_missing <- df2[index2,]
+```
+
+
+```{r}
+dates <- c()
+for(i in 1:nrow(df2_missing)){
+  epoch1 <- df2_missing[i,]$epoch
+  dates[i] <- df3[df3$epochNums==epoch1,]$epochDates
+}
+df2_missing$real_dates <- dates
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
