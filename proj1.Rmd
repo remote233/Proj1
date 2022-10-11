@@ -238,9 +238,36 @@ qplot(c(1:5), var_explained) +
 ```
 From Scree plot, we can see a clear elbow point when the number of principal component equal to 3. From the summary of principal component, we can see three principal components could explain around 83% the variation of the data points. Thus, we would choose the numebr of principal component to be 3.
 
+```{r}
+graph1=ggplot(,aes(x=df4_new_pca$x[,1], y=df4_new_pca$x[,2], col=df4_new_1$Height)) +
+  geom_point()
+graph1
+```
+
+```{r}
+graph3=ggplot(, aes(x=df4_new_pca$x[,1], y=hamatop, col=Height)) +
+  geom_line(aes(group=Height))+scale_color_gradient(low = "blue", high = "yellow")
+```
+
+```{r}
+rm(df4)
+```
 
 
+```{r}
+fviz_nbclust(df4_new_pca$x[,1:2], kmeans, method = 'wss')
 
+```
+
+
+```{r}
+
+# Compute k-means with k = 4
+library(cluster)
+library(factoextra)
+km.res <- kmeans(df4_new_pca$x[,1:2], centers=3, nstart = 25)
+fviz_cluster(km.res, data = df4_new_pca$x[,1:2])
+```
 
 
 
