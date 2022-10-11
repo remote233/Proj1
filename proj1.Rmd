@@ -78,6 +78,7 @@ df2_missing=df2_missing %>%
 ```{r}
 df_all <- df_all %>%
   drop_na(.)
+df_all <- df_all[!duplicated(df_all[,c(2,3)]),]
 ```
 
 
@@ -111,26 +112,27 @@ abline(v=q_humid_temp[1], col="red")
 abline(v=q_humid_temp[2], col="red")
 
 hist(df4$hamatop[df4$hamatop<10^5])
-q_hamatop <- c(quantile(df4$hamatop, 0.05),quantile(df4$hamatop, 0.95))
+q_hamatop <- c(quantile(df4$hamatop, 0.025),quantile(df4$hamatop, 0.975))
 abline(v=q_hamatop[1], col="red")
 abline(v=q_hamatop[2], col="red")
 
 
 hist(df4$hamabot[df4$hamabot<6000])
-q_hamabot <- c(quantile(df4$hamabot, 0.05),quantile(df4$hamabot, 0.95))
+q_hamabot <- c(quantile(df4$hamabot, 0.025),quantile(df4$hamabot, 0.975))
 abline(v=q_hamabot[1], col="red")
 abline(v=q_hamabot[2], col="red")
 ```
+On the graph showing above, we plot the histogram of these four variables with a 99% interval. For the humidity and temperature, we can roughly see a range in which most of the data are gathered. By visualizing the histograms of these two variables and considering researchers' choices of the range for those variables, we decide to set objects with humidity outside of the range (15,100) and temperature outside of the range (5,33) are outliers. However, for hamatop and hamabot, which represent the level of incident PAR and reflected PAR, we find that there seem to be many outliers in these two variables and we should set a larger quantile to separate the outliers. For these two variables, we decide to use a 95% interval to roughly decide the data we want to keep. From the graph above, we can see that the range fro hamatop is around (0,10^5) and the range for hamabot is about (0,2700). Then, we can filter outliers with rough ranges we decided above.
 
 ```{r}
-df4 <- df4 <-
+df4 <- df4 %>%
+  filter(humidity>15 & humidity<100) %>%
+  filter(humid_temp>5 & humid_temp<33) %>%
+  filter(hamatop<10^5) %>%
+  filter(hamabot<2700)
 ```
 
- 
-```{r}
-par(cex.main=0.75)
-boxplot(df4$hamatop[df4$hamatop<10^5])
-```
+
 
 
 # 3.
@@ -142,6 +144,7 @@ df4_new <- merge(df4,df3,by="epoch",all.x=TRUE)
 df4_new$epochDates=gsub("  "," ", df4_new$epochDates)
 df4_new <- df4_new %>%
   separate(epochDates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
+
 ```
 
 
