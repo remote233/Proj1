@@ -186,7 +186,16 @@ date1 <- as.Date(period, format = "%Y %b %d")
 ```
 
 
-
+```{r}
+ggplot(df4_new %>% na.omit(Height), aes(date1, humidity, col=Height))+
+  geom_line()
+ggplot(df4_new %>% na.omit(Height), aes(date1, humid_temp, col=Height))+
+  geom_line()
+ggplot(df4_new %>% na.omit(Height), aes(date1, hamatop, col=Height))+
+  geom_line()
+ggplot(df4_new %>% na.omit(Height), aes(date1, hamabot, col=Height))+
+  geom_line()
+```
 
 
 
