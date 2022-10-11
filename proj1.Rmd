@@ -139,13 +139,25 @@ df4 <- df4 %>%
 (a)
 ```{r}
 colnames(df3)[1] <- "epoch"
-
 df4_new <- merge(df4,df3,by="epoch",all.x=TRUE)
 df4_new$epochDates=gsub("  "," ", df4_new$epochDates)
 df4_new <- df4_new %>%
   separate(epochDates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
-
 ```
+
+```{r}
+# Sunrise
+df5=subset(df4_new, time>"05:00:00" & time<"10:00:00")
+pairs(df5[,c(7,8,10,11)], pch = 20)
+```
+
+```{r}
+# Sunset
+df6=subset(df4_new, time>"16:00:00" & time<"21:00:00")
+pairs(df6[,c(7,8,10,11)], pch = 20)
+```
+Before we get into other analysis on the data set after data cleaning, we should check the correlation among those variables we are interested in. We choose two distinct time period, sunrise (5:00:00 am to 10:00:00 am) and sunset (16:00:00" to 21:00:00) to check the correlation since these two time period can gives largest environmental change.
+The above two plots showed the pairwise scatterplot of humidity, temperature, hamatop, hamabot during sunrise and sunset. Both plots represents a clear negative correlation between humidity and temperature since most data points in humidity vs temperature plots seems gather along a line.
 
 
 
