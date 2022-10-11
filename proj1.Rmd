@@ -181,23 +181,62 @@ From the graphs above, we can see that there is a positive correlation between h
 
 ## (c)
 ```{r}
-period <- paste(df4_new$year, df4_new$month, df4_new$day)
-date1 <- as.Date(period, format = "%Y %b %d")
+date1 <- df4_new %>%
+  na.omit(Height) %>%
+  summarise(Date = as.Date(paste(year, month, day), format="%Y %b %d"))
 ```
 
 
 ```{r}
-ggplot(df4_new %>% na.omit(Height), aes(date1, humidity, col=Height))+
-  geom_line()
-ggplot(df4_new %>% na.omit(Height), aes(date1, humid_temp, col=Height))+
-  geom_line()
-ggplot(df4_new %>% na.omit(Height), aes(date1, hamatop, col=Height))+
-  geom_line()
-ggplot(df4_new %>% na.omit(Height), aes(date1, hamabot, col=Height))+
-  geom_line()
+plotDF <-  df4_new %>%
+  na.omit(Height) %>%
+  cbind(., date1) %>%
+  group_by(Height,Date) %>%
+  summarize(humidity=mean(humidity),
+            tempature = mean(humid_temp),
+            hamabot = mean(hamabot),
+            hamatop = mean(hamatop),
+            time = Date)
+  
+
+graph1=ggplot(plotDF, aes(x=time, y=humidity, col=Height)) +
+  geom_line(aes(group=Height))+scale_color_gradient(low = "blue", high = "yellow")
+
+
+graph2=ggplot(plotDF, aes(x=time, y=tempature, col=Height)) +
+  geom_line(aes(group=Height))+scale_color_gradient(low = "blue", high = "yellow")
+
+
+graph3=ggplot(plotDF, aes(x=time, y=hamatop, col=Height)) +
+  geom_line(aes(group=Height))+scale_color_gradient(low = "blue", high = "yellow")
+
+graph4=ggplot(plotDF, aes(x=time, y=hamabot, col=Height)) +
+  geom_line(aes(group=Height))+scale_color_gradient(low = "blue", high = "yellow")
+
+
+require(gridExtra)
+
+
+grid.arrange(graph1, graph2,graph3,graph4, nrow=2,ncol=2)
 ```
+```{r}
+df4_new_1=df4_new[,c(7,8,10,11,12)]
+df4_new_1=na.omit(df4_new_1)
+df4_new_pca <- prcomp(df4_new_1, center = TRUE,scale. = TRUE)
+summary(df4_new_pca)
+var_explained = df4_new_pca$sdev^2 / sum(df4_new_pca$sdev^2)
 
+#create scree plot
+library(ggplot2)
 
+qplot(c(1:5), var_explained) + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab("Variance Explained") +
+  ggtitle("Scree Plot") +
+  ylim(0, 0.5)
+```
+From Scree plot, we can see a clear elbow point when the number of principal component equal to 3. From the summary of principal component, we can see three principal components could explain around 83% the variation of the data points. Thus, we would choose the numebr of principal component to be 3.
 
 
 
