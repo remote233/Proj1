@@ -24,10 +24,10 @@ df3 <- read.csv("project1_data/data/sonoma-dates.csv")
 
 # 1.
 ## (a)
-In the paper A Macroscope in the Redwoods, researchers describe how they get the previously-unobtainable dataset of the microclimate surrounding a redwood tree through a wireless sensor network, and they show their analysis of these complex datasets. The purpose of this study is mainly to test whether wireless sensor networks can advance several scientific fields, which researchers talk about in the motivation part. In order to show the capability of the wireless sensor network, researchers choose to study the ecophysiology of coastal redwood forests by using the network system to monitor the microclimate surrounding a 70-meter tall redwood tree. With a well-designed data collection process and detailed analysis, they finally reached the conclusion that the sensor network macroscope enables dense temporal and spatial monitoring of large volumes of data, which can contribute to the advancement of the scientific field. In this paper, researchers also talk about lessons they learned from the experiment and how they could deploy sensor networks better in the future. To help detect the failure of the network and make responses on time, researchers suggest that every long-term sensor network deployment should include a network monitoring component which can monitor the performance of the system and make alerts when the system behaves abnormally. Besides, by verifying the existence of the spatial gradients in the microclimate near the redwood tree and collecting enough data to view changes in these gradients over time, researchers were able to validate some biological theories related to these findings.
+In the paper A Macroscope in the Redwoods, Tolle et al. describe how they get the previously-unobtainable dataset of the microclimate surrounding a redwood tree through a wireless sensor network, and they show their analysis of these complex datasets. The purpose of this study is mainly to test whether wireless sensor networks can advance several scientific fields, which Tolle et al. talk about in the motivation part. In order to show the capability of the wireless sensor network, researchers choose to study the ecophysiology of coastal redwood forests by using the network system to monitor the microclimate surrounding a 70-meter tall redwood tree. With a well-designed data collection process and detailed analysis, they finally reached the conclusion that the sensor network macroscope enables dense temporal and spatial monitoring of large volumes of data, which can contribute to the advancement of the scientific field. In this paper, Tolle et al. also talk about lessons they learned from the experiment and how they could deploy sensor networks better in the future. To help detect the failure of the network and make responses on time, Tolle et al. suggest that every long-term sensor network deployment should include a network monitoring component which can monitor the performance of the system and make alerts when the system behaves abnormally. Besides, by verifying the existence of the spatial gradients in the microclimate near the redwood tree and collecting enough data to view changes in these gradients over time, Tolle et al. were able to validate some biological theories related to these findings.
 
 ## (b)
-The process of data collection is critical to this study, so researchers carefully designed the wireless sensor network system, and used efficient deployment methodology for the system. Before being deployed, all the sensors were carefully tested and calibrated in two phrases which were roof and chamber. After that, sensor nodes were placed on the redwood tree 15 to 70 meters above the ground because most foliage was in the upper part of the tree. There was a 2 meters space between each node to ensure that researchers could capture gradients in enough detail. In addition, researchers placed the nodes on the west side of the tree since there was a thicker canopy and it could reduce the influence of the direct environmental effects. Besides, to record the microclimatic trends which had direct effects on the tree, researchers chose to place the node very close (0.1-1.0m) to the trunk. In order to get enough data, researchers record the data once every 5 minutes for 44 days. In the collected data, researchers are interested in some variables including temperature, humidity, light levels and both incident and reflected Photosynthetically active radiation(PAR). In this study, researchers collected data from both sensor network and local log, so we have two different datasets which are sonoma-data-log.csv from local log and sonoma-data-net.csv from network. For the data received from the network, there are 114980 observations while the log data contain 301056 observations. The network data only has recordings from May 7th to June 2nd which was a period of 26 days, because most of the local nodes ran out of space on that day.
+The process of data collection is critical to this study, so Tolle et al. carefully designed the wireless sensor network system, and used efficient deployment methodology for the system. Before being deployed, all the sensors were carefully tested and calibrated in two phrases which were roof and chamber. After that, sensor nodes were placed on the redwood tree 15 to 70 meters above the ground because most foliage was in the upper part of the tree. There was a 2 meters space between each node to ensure that Tolle et al. could capture gradients in enough detail. In addition, researchers placed the nodes on the west side of the tree since there was a thicker canopy and it could reduce the influence of the direct environmental effects. Besides, to record the microclimatic trends which had direct effects on the tree, Tolle et al. chose to place the node very close (0.1-1.0m) to the trunk. In order to get enough data, Tolle et al. record the data once every 5 minutes for 44 days. In the collected data, Tolle et al. are interested in some variables including temperature, humidity, light levels and both incident and reflected Photosynthetically active radiation(PAR). In this study, Tolle et al. collected data from both sensor network and local log, so we have two different datasets which are sonoma-data-log.csv from local log and sonoma-data-net.csv from network. For the data received from the network, there are 114980 observations while the log data contain 301056 observations. The network data only has recordings from May 7th to June 2nd which was a period of 26 days, because most of the local nodes ran out of space on that day.
 
 
 # 2.
@@ -38,53 +38,52 @@ df_all <- read.csv("project1_data/data/sonoma-data-all.csv")
 
 
 ```{r}
-hist(df1$humidity)
-hist(df2$humidity[df2$humidity>-10])
-hist(df1$humid_temp[df1$humid_temp<35], breaks = seq(5,35,by=2.5))
-hist(df2$humid_temp[df2$humid_temp>5 & df2$humid_temp<35], breaks = seq(5,35, by=2.5))
-hist(df1$hamatop)
-hist(df2$hamatop[df2$hamatop<10^5])
-hist(df1$hamabot[df1$hamabot<6000])
-hist(df2$hamabot[df2$hamabot<6000])
+par(mfrow=c(1,2))
+hist(df1$humidity, xlab="humidity",main="Humidity from net")
+hist(df2$humidity[df2$humidity>-10], xlab="humidity",main="Humidity from log")
+hist(df1$humid_temp[df1$humid_temp<35], breaks = seq(5,35,by=2.5), xlab="temperature", main="Temperature from net")
+hist(df2$humid_temp[df2$humid_temp>5 & df2$humid_temp<35], breaks = seq(5,35, by=2.5), xlab="temperature", main="Temperature from log")
+hist(df1$hamatop, xlab="hamatop", main="Hamatop from net")
+hist(df2$hamatop[df2$hamatop<10^5], xlab="hamatop", main="Hamatop from log")
+hist(df1$hamabot[df1$hamabot<6000], xlab="hamabot", main="Hamabot from net")
+hist(df2$hamabot[df2$hamabot<6000], xlab="hamabot", main="Hamabot from log")
 ```
 
-Variables we are interested about are humidity, temperature, hamatop, and hamabot. We find that when scaling to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent.In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
+Variables we are interested about are humidity, temperature, hamatop, which represents the level of incident PAR, and hamabot, which represents the level of Reflected PAR. We find that when scaling to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent. In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
 
 ## (b)
 ```{r}
+# Select rows with missing values from both net and log datasets
 index1 = unique(which(is.na(df1))%%114980)
 df1_missing <- df1[index1,]
 index2 = unique(which(is.na(df2))%%301056)
 df2_missing <- df2[index2,]
 ```
 
-
 ```{r}
+#Add corresponding real date to datasets from log with missing values
 dates <- c()
 for(i in 1:nrow(df2_missing)){
   epoch1 <- df2_missing[i,]$epoch
   dates[i] <- df3[df3$epochNums==epoch1,]$epochDates
 }
 df2_missing$real_dates <- dates
-```
-
-```{r}
 df2_missing$real_dates=gsub("  "," ", df2_missing$real_dates)
 df2_missing=df2_missing %>%
   separate(real_dates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
 ```
+We find that there are 4262 rows with missing values in the datasets from the net, and there are 8270 missing values in the datasets from the log. Compared to the total number of observations in the net and log datasets, we think that the number of observations with missing values only count to around 3% of total data, which is acceptable. For the data from net, we can see that all the missing values are from the node with ID 122, which means this node did not return information successfully sometimes. For the data from log, we can notice that except node 122, node 15 and node 128 also did not work well sometimes. For node 128, we find that its voltage is extremely low compared to other nodes, so this might be the reason why it did not work well. After finding the real date corresponding to the observations in data from log by its value of epoch, we notice that the time periods of data with missing values are distributed in 24 hours a day from April 30th to May 29th.
 
 
+
+## (c)
 ```{r}
+# Drop rows with missing values duplicated rows
 df_all <- df_all %>%
   drop_na(.)
 df_all <- df_all[!duplicated(df_all[,c(2,3)]),]
 ```
 
-
-
-
-## (c)
 We load the datasets of mote locations and change the column names for ID to nodeid to match tables we created before.
 ```{r}
 loc <- read.table("project1_data/data/mote-location-data.txt", header = TRUE)
@@ -101,23 +100,23 @@ As we can see above, there are 15 variables in the new datasets after the merge.
 
 ## (d)
 ```{r}
-hist(df4$humidity[df4$humidity>-10])
+hist(df4$humidity[df4$humidity>-10], xlab = "humidity", main = "distribution of humidity")
 q_humidity <- c(quantile(df4$humidity, 0.005),quantile(df4$humidity, 0.995))
 abline(v=q_humidity[1], col="red")
 abline(v=q_humidity[2], col="red")
 
-hist((df4$humid_temp[df4$humid_temp<35 & df4$humid_temp>0]))
+hist((df4$humid_temp[df4$humid_temp<35 & df4$humid_temp>0]), xlab = "temperature", main = "distribution of temperature")
 q_humid_temp <- c(quantile(df4$humid_temp, 0.005),quantile(df4$humid_temp, 0.995))
 abline(v=q_humid_temp[1], col="red")
 abline(v=q_humid_temp[2], col="red")
 
-hist(df4$hamatop[df4$hamatop<10^5])
+hist(df4$hamatop[df4$hamatop<10^5], xlab = "hamatop", main = "distribution of hamatop")
 q_hamatop <- c(quantile(df4$hamatop, 0.025),quantile(df4$hamatop, 0.975))
 abline(v=q_hamatop[1], col="red")
 abline(v=q_hamatop[2], col="red")
 
 
-hist(df4$hamabot[df4$hamabot<6000])
+hist(df4$hamabot[df4$hamabot<6000], xlab = "hamabot", main = "distribution of hamabot")
 q_hamabot <- c(quantile(df4$hamabot, 0.025),quantile(df4$hamabot, 0.975))
 abline(v=q_hamabot[1], col="red")
 abline(v=q_hamabot[2], col="red")
@@ -133,10 +132,17 @@ df4 <- df4 %>%
 ```
 
 
+## (e)
+When we are combining the datasets from both net and log,We find that there are some duplicated rows which should be deleted. Also, after reading the paper, we realize that data from node with voltage higher than 3.0 or lower than 2.4 should be removed.
+```{r}
+df4 <- df4 %>%
+  filter((voltage>=2.4 & voltage<=3.0)| voltage>200)
+```
+
 
 
 # 3.
-(a)
+## (a)
 ```{r}
 colnames(df3)[1] <- "epoch"
 df4_new <- merge(df4,df3,by="epoch",all.x=TRUE)
@@ -159,7 +165,7 @@ pairs(df6[,c(7,8,10,11)], pch = 20)
 Before we get into other analysis on the data set after data cleaning, we should check the correlation among those variables we are interested in. We choose two distinct time period, sunrise (5:00:00 am to 10:00:00 am) and sunset (16:00:00" to 21:00:00) to check the correlation since these two time period can gives largest environmental change.
 The above two plots showed the pairwise scatterplot of humidity, temperature, hamatop, hamabot during sunrise and sunset. Both plots represents a clear negative correlation between humidity and temperature since most data points in humidity vs temperature plots seems gather along a line.
 
-(b)
+## (b)
 ```{r}
 par(mfrow=c(1,2))
 plot(df5$hamatop,df5$humid_temp, xlab = "hamatop", ylab = "temperature")
