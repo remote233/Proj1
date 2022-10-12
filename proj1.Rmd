@@ -293,8 +293,36 @@ graph2
 ```
 
 ## 5 Graph Critique in the paper
-The overall quality of the paper by Tolle et al. is good. This paper 
-However, some plots are not perfect from a statistician’s point of view. In the following conetent, we will discuss 
+The overall quality of the paper by Tolle et al. is good. This paper gives us a chance to study collecting data and processing experiment through many graphs. However, some plots are not perfect from a statistician’s point of view. In the following content, we will discuss some graph critique in the paper. The focus will on the Figure 3[a], 3[c], 3[d], 4 and 7.
+
+## Figure 3[a]
+In Figure 3[a], we notice the histogram of "Incident PAR" and "Reflected PAR". Both these two graph have a long tail of small-value or zero-value readings. Comparing to the large-value reading at the right of these two histograms, it would be very hard for readers to check the value of readings in the tail parts of these two histogram. In this case, I would recommend to adjust the data scale and apply an log-transformation on data. After the log-transformation, we could remove the zero-value from plots and shrink the value-difference between large-value reading and small-value reading. In this way, we could have a better visualization on the whole plot, especially on the tail part of the histogram of "Incident PAR" and "Reflected PAR".
+```{r}
+hist(log(df4_new$hamatop))
+hist(log(df4_new$hamabot))
+```
+
+
+## Figure 3[c] and 3[d]
+In these two plots, Tolle et al. is interested in "temperature", "relative humidity", "reflected PAR" and "incident PAR",these four variable's variation at different heights. Tolle et al tries to apply the box plots to convey and visualize these messages, but this way doesn't work very well. 
+
+Since in Figure3[c] and 3[d], there's re total 27 different heights group along the y-axis. This means, in each plot, there will be total 27 box plots be included into each graph. If there is not a clear variation change along with the height change, which is the case here, it would be very hard for readers to tell the relationship between variable variation change and the height change.
+
+From our opinion, Tolle et al. could calculate the variance at different height group and draw the line graph to check the distribution of all four variables vary at different heights.
+```{r}
+x=df4_new%>%group_by(Height)%>%summarise(humidity_var=var(humidity),temp_var=var(humid_temp),hamatop_var=var(hamatop),hamabot_var=var(hamabot))
+plot(x$Height,x$humidity_var,type = "l")
+plot(x$Height,x$temp_var,type = "l")
+plot(x$Height,x$hamatop_var,type = "l")
+plot(x$Height,x$hamabot_var,type = "l")
+```
+
+## Figure4
+For figure 4, it's very hard to distinguish all the colors. It would be better for Tolle et al. to add the legend so that reader could understand the corresponding height of each color line. Moreover, the first two plots on the left part included. If Tolle et al. could cut the whole day time period to several smaller time period, such as 5:00:00am- 10:00:00am (sunrise period), 10:00:00am-16:00:00, 16:00:00-21:00:00 (sunset period), and 21:00:00-5:00:00am. The visualization effect could be better. 
+
+## Figure7
+For Figure 7, it represents the relationship between yield and two predictor variables, height and day, recorded by network data and log data. This figure clearly showed both data sets include many missing data, since their "%" vs "day" box plots have a big gap. Moreover, for better visualization, we could apply a back-to-back histogram to compare the net work data and log data yield.
+
 
 
 
