@@ -259,10 +259,11 @@ From Scree plot, we can see a clear elbow point when the number of principal com
 ## (a)
 ```{r}
 graph1=ggplot(,aes(x=df4_new_pca$x[,1], y=df4_new_pca$x[,2], col=df4_new_1$Height)) +
-  geom_point()
+  geom_point() +
+  scale_color_gradient(low="blue", high="red")
 graph1
 ```
-We plotted the relationship between first two PCs with PC1 as x axis and PC2 as y axis, and we color our points with the value of heights. We find that there is an obvious stratification for our points based on the value of height. Points with smaller values of heights are gathered closely on the top of the graph, while points with larger values of heights are 
+We plotted the relationship between first two PCs with PC1 as x axis and PC2 as y axis, and we color our points with the value of heights. We find that there is an obvious stratification for our points based on the value of height, which is interesting. Points with smaller values of heights gather closely on the top of the graph, while points with larger values of heights  gather on the on the bottom of the graph. This might imply that there is a strong correlation between height and second PC.
 
 ## (b)
 ```{r}
@@ -270,7 +271,6 @@ df4_new = df4_new %>%
   na.omit(Height)
 time <- df4_new$time
 suntime <- c()
-
 
 
 for(i in 1:length(time)){
@@ -281,18 +281,30 @@ for(i in 1:length(time)){
   else
     suntime[i] <- "other"
 }
-graph1=ggplot(,aes(x=date1$Date, y=df4_new_pca$x[,1], col=suntime)) +
-  geom_point() +
-  labs(x="Date", y="PC1")
-graph1
+
+pc1_time <- cbind(date1,df4_new_pca$x[,1],suntime)
+pc2_time <- cbind(date1,df4_new_pca$x[,2],suntime)
+colnames(pc1_time)[2] <- "PC1"
+colnames(pc2_time)[2] <- "PC2"
+pc1_time = pc1_time %>%
+  group_by(suntime, Date) %>%
+  summarise(PC1=mean(PC1))
+pc2_time = pc2_time %>%
+  group_by(suntime, Date) %>%
+  summarise(PC2=mean(PC2))
 ```
 
+
 ```{r}
-graph2=ggplot(,aes(x=date1$Date, y=df4_new_pca$x[,2], col=suntime)) +
-  geom_point()+
-  labs(x="Date", "PC2")
-graph2
+ggplot(pc1_time,aes(Date,PC1,col=suntime))+
+  geom_smooth()
+ggplot(pc2_time,aes(Date,PC2,col=suntime))+
+  geom_smooth()
 ```
+
+
+After getting new dimensions through PCA, we are interested in the relationship between our new dimensions and the time. We firstly separate our time period in a day to sunrise which is from 5:00 am to 10:00 am, sunset which is from 4:00 pm to 9:00 pm, and other which include all other time periods in a day. Then, we plot PC1 and PC2 with date as x-axis and color points with the three time periods we separated before. We find that 
+
 
 
 
