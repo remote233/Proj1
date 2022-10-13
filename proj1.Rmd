@@ -234,8 +234,14 @@ graph4=ggplot(plotDF, aes(x=time, y=hamabot, col=Height)) +
 
 grid.arrange(graph1, graph2,graph3,graph4, nrow=2,ncol=2)
 ```
+The above four plots showed humidity, temperature, incident PAR (hamatop) and reflective PAR (hamabot), these four variables' temporal trend. The temperature plot have the smallest range on temperature's value, and if we ignore the strange outlier in temperature plot, the range could shrink more. Humidity plot have the second smallest range on humidity's value, then the hamabot's value range in the above hamabot (reflective PAR) vs time plot increase to around (0,825). For hamatop (incident PAR) vs time plot, since the existence of outlier, the range of hamatop's value is expanded to the strange level, around(0, 87000). If we ignore this outlier, the range of hamatop's value could be around (0,37500).
+For humidity and temperature, we could say there's a continuity feature showed on the plot. The humidity tend to increase at the beginning of May, and decrease when the middle of May is approaching, then increase back to high level until the big drop at the end of May, beginning of June.The temperature tend to decrease at the beginning of May, and keep at a low level during the middle of May, then increase back to high level at the end of May. 
+Incident PAR (hamatop) and reflective PAR (hamabot) seem keep at a similar level among the whole time period recorded in the above plots. This is strange behavior which doesn't fit our expectation. There might be a relationship between these two variables and the time change, but the above plots don't show clearly.
 
+
+## (d)
 ```{r}
+# pca with five variables
 df4_new_1=df4_new[,c(7,8,10,11,12)]
 df4_new_1=na.omit(df4_new_1)
 df4_new_pca <- prcomp(df4_new_1, center = TRUE,scale. = TRUE)
@@ -251,7 +257,7 @@ qplot(c(1:5), var_explained) +
   ggtitle("Scree Plot") +
   ylim(0, 0.5)
 ```
-From Scree plot, we can see a clear elbow point when the number of principal component equal to 3. From the summary of principal component, we can see three principal components could explain around 83% the variation of the data points. Thus, we would choose the numebr of principal component to be 3.
+We performed PCA with five dimensions including humidity, temperature, incident PAR(hamatop), reflective PAR (hamabot) and height. From Scree plot, we can see a clear elbow point when the number of principal component equal to 3. From the summary of principal component, we can see three principal components could explain around 83% the variation of the data points. Thus, we would choose the numebr of principal component to be 3.
 
 
 
