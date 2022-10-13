@@ -1,13 +1,13 @@
 ---
-title: "Proj1"
-author: "Yiliang Yuan"
+title: "STA 521: Project 1 Redwood Data"
+author: "Yiliang Yuan & Yiyu Lin"
 date: "2022-10-09"
 header-includes:
     - \usepackage{setspace}\doublespacing
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyr)
 library(tidyverse)
@@ -15,7 +15,7 @@ library(ggplot2)
 library(gridExtra)
 ```
 
-```{r}
+```{r,echo=FALSE}
 df1 <- read.csv("project1_data/data/sonoma-data-net.csv")
 df2 <- read.csv("project1_data/data/sonoma-data-log.csv")
 # We derive the sonoma-dates.csv from the original file sonoma-dates
@@ -23,24 +23,24 @@ df3 <- read.csv("project1_data/data/sonoma-dates.csv")
 ```
 
 
-# 1.
-## (a)
+# 1 Data collection
+## (a) Summary about the Paper
 In the paper A Macroscope in the Redwoods, Tolle et al. describe how they get the previously unobtainable dataset of the microclimate surrounding a redwood tree through a wireless sensor network, and they show their analysis of these complex datasets. In the motivation part, Tolle et al. talked the purpose of this study is to research the ecophysiology of coastal redwood forests by using the wireless sensor network, from which researchers can show the capability of wireless sensor networks in advancing several scientific fields. All of the data was collected from a 70-meter tall redwood tree in Sonoma, California over 44 days. With a well-designed data collection process and detailed analysis, they finally reached the conclusion that the sensor network macroscope enables dense temporal and spatial monitoring of large volumes of data, which can contribute to the advancement of the scientific field. In this paper, Tolle et al. also talk about lessons they learned from the experiment and how they could deploy sensor networks better in the future. To help detect the failure of the network and make responses on time, Tolle et al. suggest that every long-term sensor network deployment should include a network monitoring component which can monitor the performance of the system and make alerts when the system behaves abnormally. Besides, by verifying the existence of the spatial gradients in the microclimate near the redwood tree and collecting enough data to view changes in these gradients over time, Tolle et al. were able to validate some biological theories related to these findings.
 
-## (b)
+## (b) Summary about the Data Collection
 The process of data collection is critical to this study, so Tolle et al. carefully designed the wireless sensor network system and used efficient deployment methodology for the system. Before being deployed, all the sensors were carefully tested and calibrated in two phrases which were roof and chamber. After that, sensor nodes were placed on the redwood tree 15 to 70 meters above the ground because most foliage was in the upper part of the tree. There was a 2 meters space between each node to ensure that Tolle et al. could capture gradients in enough detail. In addition, researchers placed the nodes on the west side of the tree since there was a thicker canopy and it could reduce the influence of the direct environmental effects. Besides, to record the microclimatic trends which had direct effects on the tree, Tolle et al. chose to place the node very close (0.1-1.0m) to the trunk. In order to get enough data, Tolle et al. record the data once every 5 minutes for 44 days. 
 
 In this study, Tolle et al. are interested in some variables including temperature, humidity, light levels and both incident and reflected Photosynthetically active radiation (PAR). After deploying nodes carefully, Tolle et al. collected data from both wireless sensor network and local loggers, so we have two different datasets which are sonoma-data-log.csv from local log and sonoma-data-net.csv from network. For the data received from the network, there are 114980 observations while the data stored in the local logger contained 301056 observations. The network data only has recordings from May 7th to June 2nd which was a period of 26 days, because most of the local nodes ran out of space on that day. In addition, data received from the network all show a voltage over 200, while data stored in the local logger show very small measurements of voltage.
 
 
-# 2.
+# 2 Data cleaning
 ## (a)
-```{r}
+```{r,echo=FALSE}
 df_all <- read.csv("project1_data/data/sonoma-data-all.csv")
 ```
 
 
-```{r}
+```{r,echo=FALSE}
 par(mfrow=c(1,2))
 hist(df1$humidity, xlab="humidity",main="Humidity from net")
 hist(df2$humidity[df2$humidity>-10], xlab="humidity",main="Humidity from log")
@@ -55,7 +55,7 @@ hist(df2$hamabot[df2$hamabot<6000], xlab="hamabot", main="Hamabot from log")
 Variables we are interested about are humidity, temperature, hamatop, which represents the level of incident PAR, and hamabot, which represents the level of Reflected PAR. We find that when scaled to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent. In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
 
 ## (b)
-```{r}
+```{r,echo=FALSE}
 # Select rows with missing values from both net and log datasets
 index1 = unique(which(is.na(df1))%%114980)
 df1_missing <- df1[index1,]
@@ -63,7 +63,7 @@ index2 = unique(which(is.na(df2))%%301056)
 df2_missing <- df2[index2,]
 ```
 
-```{r}
+```{r,echo=FALSE}
 #Add corresponding real date to datasets from log with missing values
 dates <- c()
 for(i in 1:nrow(df2_missing)){
@@ -80,29 +80,27 @@ We find that there are 4262 rows with missing values in the datasets from the ne
 
 
 ## (c)
-```{r}
+```{r,echo=FALSE}
 # Drop rows with missing values duplicated rows
 df_all <- df_all %>%
   drop_na(.)
 df_all <- df_all[!duplicated(df_all[,c(2,3)]),]
 ```
 
-We load the datasets of mote locations and change the column names for ID to nodeid to match tables we created before.
-```{r}
+```{r,echo=FALSE}
 loc <- read.table("project1_data/data/mote-location-data.txt", header = TRUE)
 colnames(loc)[1] <- "nodeid"
 ```
 
-Left join the loc table to the main table by nodeid.
-```{r}
+```{r,echo=FALSE, results = FALSE}
 df4 <- merge(df_all, loc, by="nodeid",all.x=TRUE)
 head(df4)
 ```
-As we can see above, there are 15 variables in the new datasets after the merge.
+We choose to use left join to incorporate mote-location-data.txt in the main table by matching the id of nodes. After the merge, there are 15 variables in the new datasets after the merge.
 
 
 ## (d)
-```{r}
+```{r,echo=FALSE}
 hist(df4$humidity[df4$humidity>-10], xlab = "humidity", main = "distribution of humidity")
 q_humidity <- c(quantile(df4$humidity, 0.005),quantile(df4$humidity, 0.995))
 abline(v=q_humidity[1], col="red")
@@ -126,7 +124,7 @@ abline(v=q_hamabot[2], col="red")
 ```
 On the graph showing above, we plot the histogram of these four variables with a 99% interval. For the humidity and temperature, we can roughly see a range in which most of the data are gathered. By visualizing the histograms of these two variables and considering researchers' choices of the range for those variables, we decide to set objects with humidity outside of the range (15,100) and temperature outside of the range (5,33) are outliers. However, for hamatop and hamabot, which represent the level of incident PAR and reflected PAR, we find that there seem to be many outliers in these two variables and we should set a larger quantile to separate the outliers. For these two variables, we decide to use a 95% interval to roughly decide the data we want to keep. From the graph above, we can see that the range fro hamatop is around (0,10^5) and the range for hamabot is about (0,2700). Then, we can filter outliers with rough ranges we decided above.
 
-```{r}
+```{r,echo=FALSE}
 #filter outliers
 df4 <- df4 %>%
   filter(humidity>15 & humidity<100) %>%
@@ -138,16 +136,16 @@ df4 <- df4 %>%
 
 ## (e)
 When we are combining the datasets from both net and log, we find that there are some duplicated rows which should be deleted. Also, after reading the paper, we realize that data from node with voltage higher than 3.0v or lower than 2.4v should be removed, but we should keep those data from network with voltage all larger than 200.
-```{r}
+```{r,echo=FALSE}
 df4 <- df4 %>%
   filter((voltage>=2.4 & voltage<=3.0)| voltage>200)
 ```
 
 
 
-# 3.
+# 3 Data Exploration
 ## (a)
-```{r}
+```{r,echo=FALSE}
 colnames(df3)[1] <- "epoch"
 df4_new <- merge(df4,df3,by="epoch",all.x=TRUE)
 df4_new$epochDates=gsub("  "," ", df4_new$epochDates)
@@ -155,49 +153,49 @@ df4_new <- df4_new %>%
   separate(epochDates, into=c('weekday', 'month', 'day', 'time', 'year'), sep=" ")
 ```
 
-```{r}
+```{r,echo=FALSE}
 # Sunrise
 df5=subset(df4_new, time>"05:00:00" & time<"10:00:00")
-pairs(df5[,c(7,8,10,11)], pch = 20)
+pairs(df5[,c(7,8,10,11)], pch = 20, main="Sunrise")
 ```
 
-```{r}
+```{r,echo=FALSE}
 # Sunset
 df6=subset(df4_new, time>"16:00:00" & time<"21:00:00")
-pairs(df6[,c(7,8,10,11)], pch = 20)
+pairs(df6[,c(7,8,10,11)], pch = 20, main="Sunset")
 ```
 Before we get into other analysis on the data set after data cleaning, we should check the correlation among those variables we are interested in. We choose two distinct time period, sunrise (5:00:00 am to 10:00:00 am) and sunset (16:00:00" to 21:00:00) to check the correlation since these two time period can gives largest environmental change.
 The above two plots showed the pairwise scatterplot of humidity, temperature, hamatop, hamabot during sunrise and sunset. Both plots represents a clear negative correlation between humidity and temperature since most data points in humidity vs temperature plots seems gather along a line.
 
 ## (b)
-```{r}
+```{r,echo=FALSE}
 par(mfrow=c(1,2))
-plot(df5$hamatop,df5$humid_temp, xlab = "hamatop", ylab = "temperature")
+plot(df5$hamatop,df5$humid_temp, xlab = "hamatop", ylab = "temperature", main="Sunrise")
 abline(lm(df5$humid_temp~df5$hamatop),col="red")
-plot(df6$hamatop,df6$humid_temp, xlab = "hamatop", ylab = "temperature")
+plot(df6$hamatop,df6$humid_temp, xlab = "hamatop", ylab = "temperature", main="Sunset")
 abline(lm(df6$humid_temp~df6$hamatop),col="red")
 ```
 
-```{r}
+```{r,echo=FALSE}
 par(mfrow=c(1,2))
-plot(df5$hamatop,df5$humidity, xlab = "hamatop", ylab = "humidity")
+plot(df5$hamatop,df5$humidity, xlab = "hamatop", ylab = "humidity", main="Sunrise")
 abline(lm(df5$humidity~df5$hamatop),col="red")
-plot(df6$hamatop,df6$humidity, xlab = "hamatop", ylab = "humidity")
+plot(df6$hamatop,df6$humidity, xlab = "hamatop", ylab = "humidity", main="Sunset")
 abline(lm(df6$humidity~df6$hamatop),col="red")
 ```
 
-From the graphs above, we can see that there is a positive correlation between hamatop or incident PAR and temperature, and there is a negative correlation between incident PAR and humidity.
+We plot the relationship between hamatop or incident PAR and both humidity and temperature. From the graphs above, we can see that there is a positive correlation between hamatop or incident PAR and temperature, and there is a negative correlation between incident PAR and humidity.
 
 
 ## (c)
-```{r}
+```{r,echo=FALSE}
 date1 <- df4_new %>%
   na.omit(Height) %>%
   summarise(Date = as.Date(paste(year, month, day), format="%Y %b %d"))
 ```
 
 
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 plotDF <-  df4_new %>%
   na.omit(Height) %>%
   cbind(., date1) %>%
@@ -240,12 +238,11 @@ Incident PAR (hamatop) and reflective PAR (hamabot) seem keep at a similar level
 
 
 ## (d)
-```{r}
+```{r,echo=FALSE}
 # pca with five variables
 df4_new_1=df4_new[,c(7,8,10,11,12)]
 df4_new_1=na.omit(df4_new_1)
 df4_new_pca <- prcomp(df4_new_1, center = TRUE,scale. = TRUE)
-summary(df4_new_pca)
 var_explained = df4_new_pca$sdev^2 / sum(df4_new_pca$sdev^2)
 
 #create scree plot
@@ -261,9 +258,9 @@ We performed PCA with five dimensions including humidity, temperature, incident 
 
 
 
-# 4.
+# 4 Interesting Findings
 ## (a)
-```{r}
+```{r,echo=FALSE}
 graph1=ggplot(,aes(x=df4_new_pca$x[,1], y=df4_new_pca$x[,2], col=df4_new_1$Height)) +
   geom_point() +
   scale_color_gradient(low="blue", high="red")+
@@ -274,7 +271,7 @@ We plotted the relationship between first two PCs with PC1 as x axis and PC2 as 
 
 
 ## (b)
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 df4_new_2 = df4_new %>%
   na.omit(Height)
 time <- df4_new_2$time
@@ -303,7 +300,7 @@ pc2_time = pc2_time %>%
 ```
 
 
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 ggplot(pc1_time,aes(Date,PC1,col=suntime))+
   geom_smooth()
 ggplot(pc2_time,aes(Date,PC2,col=suntime))+
@@ -322,9 +319,9 @@ The overall quality of the paper by Tolle et al. is good. This paper gives us a 
 
 ## (a)
 In Figure 3[a], we notice the histogram of "Incident PAR" and "Reflected PAR". Both these two graph have a tail of small-value or zero-value readings. Comparing to the large-value reading at the right of these two histograms, it would be very hard for readers to check the value of readings in the tail parts of these two histogram. In this case, I would recommend to apply an log-transformation on data and adjust the data scale. After the log-transformation, we could remove the zero-value from plots and shrink the value-difference between large-value reading and small-value reading. In this way, we could have a better visualization on the whole plot, especially for the histogram of Hamatop (Incident PAR).
-```{r}
-hist(log(df4_new$hamatop),xlab = "Hamatop")
-hist(log(df4_new$hamabot),xlab = "Hamabot")
+```{r,echo=FALSE}
+hist(log(df4_new$hamatop),xlab = "Hamatop", main="Histogram of log")
+hist(log(df4_new$hamabot),xlab = "Hamabot", main="Histogram of log")
 ```
 
 
@@ -334,7 +331,7 @@ In these two plots, Tolle et al. is interested in "temperature", "relative humid
 Since in Figure3[c] and 3[d], there's re total 27 different heights group along the y-axis. This means, in each plot, there will be total 27 box plots be included into each graph. If there is not a clear variation change along with the height change, which is the case here, it would be very hard for readers to tell the relationship between variable variation change and the height change.
 
 From our opinion, Tolle et al. could calculate the variance at different height value and draw the line graph to check the distribution of all four variables vary at different height value.
-```{r}
+```{r,echo=FALSE}
 x=df4_new%>%group_by(Height)%>%summarise(humidity_var=var(humidity),temp_var=var(humid_temp),hamatop_var=var(hamatop),hamabot_var=var(hamabot))
 plot(x$Height,x$humidity_var,type = "l",xlab="Height",ylab = "Humidity Variance")
 plot(x$Height,x$temp_var,type = "l",xlab="Height",ylab = "Temperature Variance")
