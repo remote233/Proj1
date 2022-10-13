@@ -2,9 +2,7 @@
 title: "STA 521: Project 1 Redwood Data"
 author: "Yiliang Yuan & Yiyu Lin"
 date: "2022-10-09"
-header-includes:
-    - \usepackage{setspace}\doublespacing
-output: pdf_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -188,14 +186,14 @@ We plot the relationship between hamatop or incident PAR and both humidity and t
 
 
 ## (c)
-```{r,echo=FALSE}
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 date1 <- df4_new %>%
   na.omit(Height) %>%
   summarise(Date = as.Date(paste(year, month, day), format="%Y %b %d"))
 ```
 
 
-```{r,echo=FALSE,warning=FALSE}
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 plotDF <-  df4_new %>%
   na.omit(Height) %>%
   cbind(., date1) %>%
@@ -271,7 +269,7 @@ We plotted the relationship between first two PCs with PC1 as x axis and PC2 as 
 
 
 ## (b)
-```{r,echo=FALSE,warning=FALSE}
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 df4_new_2 = df4_new %>%
   na.omit(Height)
 time <- df4_new_2$time
@@ -300,7 +298,7 @@ pc2_time = pc2_time %>%
 ```
 
 
-```{r,echo=FALSE,warning=FALSE}
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
 ggplot(pc1_time,aes(Date,PC1,col=suntime))+
   geom_smooth()
 ggplot(pc2_time,aes(Date,PC2,col=suntime))+
@@ -320,6 +318,7 @@ The overall quality of the paper by Tolle et al. is good. This paper gives us a 
 ## (a)
 In Figure 3[a], we notice the histogram of "Incident PAR" and "Reflected PAR". Both these two graph have a tail of small-value or zero-value readings. Comparing to the large-value reading at the right of these two histograms, it would be very hard for readers to check the value of readings in the tail parts of these two histogram. In this case, I would recommend to apply an log-transformation on data and adjust the data scale. After the log-transformation, we could remove the zero-value from plots and shrink the value-difference between large-value reading and small-value reading. In this way, we could have a better visualization on the whole plot, especially for the histogram of Hamatop (Incident PAR).
 ```{r,echo=FALSE}
+par(mfrow=c(1,2))
 hist(log(df4_new$hamatop),xlab = "Hamatop", main="Histogram of log")
 hist(log(df4_new$hamabot),xlab = "Hamabot", main="Histogram of log")
 ```
@@ -332,6 +331,7 @@ Since in Figure3[c] and 3[d], there's re total 27 different heights group along 
 
 From our opinion, Tolle et al. could calculate the variance at different height value and draw the line graph to check the distribution of all four variables vary at different height value.
 ```{r,echo=FALSE}
+par(mfrow=c(2,2))
 x=df4_new%>%group_by(Height)%>%summarise(humidity_var=var(humidity),temp_var=var(humid_temp),hamatop_var=var(hamatop),hamabot_var=var(hamabot))
 plot(x$Height,x$humidity_var,type = "l",xlab="Height",ylab = "Humidity Variance")
 plot(x$Height,x$temp_var,type = "l",xlab="Height",ylab = "Temperature Variance")
