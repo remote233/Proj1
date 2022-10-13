@@ -52,7 +52,7 @@ hist(df1$hamabot[df1$hamabot<6000], xlab="hamabot", main="Hamabot from net")
 hist(df2$hamabot[df2$hamabot<6000], xlab="hamabot", main="Hamabot from log")
 ```
 
-Variables we are interested about are humidity, temperature, hamatop, which represents the level of incident PAR, and hamabot, which represents the level of Reflected PAR. We find that when scaling to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent. In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
+Variables we are interested about are humidity, temperature, hamatop, which represents the level of incident PAR, and hamabot, which represents the level of Reflected PAR. We find that when scaled to the same range, hamatop and hamabot are consistent in the two datasets, but humidity and temperature are not consistent. In order to convert the data to the same range, we firstly see the range of those variables from the two datasets and we find that both data have many outliers which greatly influence the readability of the graph. Therefore, we decide to limit the range of each variable to where most data are clustered. We set the range of variables as: humidity (-5,120), temperature (5,35), hamatop (0,10^5) and hamabot (0,6000). After plotting histogram based on the range above, we find that graph of hamatop and hamabot are very close, but graphs of humidity and temperature are very different. Therefore, we could say humidity and temperature are inconsistent in these two datasets.
 
 ## (b)
 ```{r}
@@ -137,7 +137,7 @@ df4 <- df4 %>%
 
 
 ## (e)
-When we are combining the datasets from both net and log,We find that there are some duplicated rows which should be deleted. Also, after reading the paper, we realize that data from node with voltage higher than 3.0 or lower than 2.4 should be removed, but we should keep those data from network with voltage all larger than 200.
+When we are combining the datasets from both net and log, we find that there are some duplicated rows which should be deleted. Also, after reading the paper, we realize that data from node with voltage higher than 3.0v or lower than 2.4v should be removed, but we should keep those data from network with voltage all larger than 200.
 ```{r}
 df4 <- df4 %>%
   filter((voltage>=2.4 & voltage<=3.0)| voltage>200)
@@ -260,16 +260,18 @@ From Scree plot, we can see a clear elbow point when the number of principal com
 ```{r}
 graph1=ggplot(,aes(x=df4_new_pca$x[,1], y=df4_new_pca$x[,2], col=df4_new_1$Height)) +
   geom_point() +
-  scale_color_gradient(low="blue", high="red")
+  scale_color_gradient(low="blue", high="red")+
+  labs(x="PC1", y="PC2",col="Height")
 graph1
 ```
-We plotted the relationship between first two PCs with PC1 as x axis and PC2 as y axis, and we color our points with the value of heights. We find that there is an obvious stratification for our points based on the value of height, which is interesting. Points with smaller values of heights gather closely on the top of the graph, while points with larger values of heights  gather on the on the bottom of the graph. This might imply that there is a strong correlation between height and second PC.
+We plotted the relationship between first two PCs with PC1 as x axis and PC2 as y axis, and we color our points with the value of heights. We find that there is an obvious stratification for our points based on the value of height, which is interesting. Points with smaller values of heights gather closely on the top of the graph, while points with larger values of heights group on the bottom of the graph. This might imply that there is a correlation between height and second PC.
+
 
 ## (b)
 ```{r}
-df4_new = df4_new %>%
+df4_new_2 = df4_new %>%
   na.omit(Height)
-time <- df4_new$time
+time <- df4_new_2$time
 suntime <- c()
 
 
@@ -303,15 +305,16 @@ ggplot(pc2_time,aes(Date,PC2,col=suntime))+
 ```
 
 
-After getting new dimensions through PCA, we are interested in the relationship between our new dimensions and the time. We firstly separate our time period in a day to sunrise which is from 5:00 am to 10:00 am, sunset which is from 4:00 pm to 9:00 pm, and other which include all other time periods in a day. Then, we plot PC1 and PC2 with date as x-axis and color points with the three time periods we separated before. We find that 
+After getting new dimensions through PCA, we are interested in the relationship between our new dimensions and the time. We firstly separate our time period in a day to sunrise which is from 5:00 am to 10:00 am, sunset which is from 4:00 pm to 9:00 pm, and other which include all other time periods in a day. Then, we plot PC1 and PC2 with date as x-axis and draw the three lines with the time periods we separated before. We can see that the the trends in both graph are very similar, but we can notice the lines of sunrise look higher than the other two lines, and lines of sunset seem to be lower than the other two lines. Therefore, we find it is interesting that both PC1 and PC2 tend to be larger during sunrise period, while they tend to be smaller during sunset period.
 
 
 
 
-## 5 Graph Critique in the paper
+
+# 5 Graph Critique in the paper
 The overall quality of the paper by Tolle et al. is good. This paper gives us a chance to study collecting data and processing experiment through many graphs. However, some plots are not perfect from a statistician’s point of view. In the following content, we will discuss some graph critique in the paper. The focus will on the Figure 3[a], 3[c], 3[d], 4 and 7.
 
-## Figure 3[a]
+## (a)
 In Figure 3[a], we notice the histogram of "Incident PAR" and "Reflected PAR". Both these two graph have a tail of small-value or zero-value readings. Comparing to the large-value reading at the right of these two histograms, it would be very hard for readers to check the value of readings in the tail parts of these two histogram. In this case, I would recommend to apply an log-transformation on data and adjust the data scale. After the log-transformation, we could remove the zero-value from plots and shrink the value-difference between large-value reading and small-value reading. In this way, we could have a better visualization on the whole plot, especially for the histogram of Hamatop (Incident PAR).
 ```{r}
 hist(log(df4_new$hamatop),xlab = "Hamatop")
@@ -319,7 +322,7 @@ hist(log(df4_new$hamabot),xlab = "Hamabot")
 ```
 
 
-## Figure 3[c] and 3[d]
+## (b)
 In these two plots, Tolle et al. is interested in "temperature", "relative humidity", "reflected PAR" and "incident PAR",these four variable's variation at different heights. Tolle et al tries to apply the box plots to convey and visualize these messages, but this way doesn't work very well. 
 
 Since in Figure3[c] and 3[d], there's re total 27 different heights group along the y-axis. This means, in each plot, there will be total 27 box plots be included into each graph. If there is not a clear variation change along with the height change, which is the case here, it would be very hard for readers to tell the relationship between variable variation change and the height change.
@@ -334,10 +337,10 @@ plot(x$Height,x$hamabot_var,type = "l",xlab="Height",ylab = "Hamabot Variance")
 ```
 From the four plots showed above, we could see there's a clear increasing on variance of Hamatop and Hamabot, which means, with the height increase, these variation of these two variables (Hamatop and Hamabot) also increase. For other two variables (HUmidity and Temperature), the variation of them could not be tell from the above plots.
 
-## Figure4
+## (c)
 For figure 4, it's very hard to distinguish all the colors. It would be better for Tolle et al. to add the legend so that reader could understand the corresponding height of each color line. Moreover, the time period for these plot is 24 hours, but the temperature/humidity change period is not the whole day. If Tolle et al. could cut the whole day time period to several smaller time period, such as 5:00:00am- 10:00:00am (sunrise period), 10:00:00am-16:00:00, 16:00:00-21:00:00 (sunset period), and 21:00:00-5:00:00am. The visualization effect could be better. 
 
-## Figure7
+## (d)
 For Figure 7, it represents the relationship between yield and two predictor variables, height and day, recorded by network data and log data. This figure clearly showed both data sets include many missing data, since their "%" vs "day" box plots have a big gap. Moreover, for better visualization, we could apply a back-to-back histogram to compare the net work data and log data yield.
 
 
